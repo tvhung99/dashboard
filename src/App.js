@@ -5,7 +5,7 @@ import Auth from "./pages/AuthLayout";
 
 function App() {
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={0}>
       
         <Routes>
           {/* { login } */}
