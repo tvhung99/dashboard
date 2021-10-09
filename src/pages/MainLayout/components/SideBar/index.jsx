@@ -6,12 +6,18 @@ import List from '@material-ui/core/List';
 import { single , nested } from '../../../../menu-item/dashboard';
 import Single from './List/Single';
 import Nested from './List/Nested';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { useNavigate } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
     root: {
       width: '100%',
-      maxWidth: 360,
+      maxHeight: '100vh',
       backgroundColor: theme.palette.background.paper,
+      overflowY : 'auto',
     }
   }));
 
@@ -21,6 +27,13 @@ SideBar.propTypes = {
 
 function SideBar(props) {
     const classes = useStyles();
+    const navigate = useNavigate()
+    const handleLogout = () =>{
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user');
+      navigate('/');
+    }
+
     return (
         <List
           component="nav"
@@ -38,6 +51,13 @@ function SideBar(props) {
             {
                 nested.map(item => <Nested key={item.id} name={item.name} subitems={item.subitems} />)
             }
+
+            <ListItem button>
+                <ListItemIcon>
+                  <ExitToAppIcon />
+                </ListItemIcon>
+                <ListItemText primary="Đăng xuất" onClick={handleLogout} />
+            </ListItem>
         </List>
       );
 }

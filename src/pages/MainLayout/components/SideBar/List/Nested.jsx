@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -33,20 +33,21 @@ Nested.propTypes = {
 function Nested({name , subitems}) {
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
+    const ref = useRef();
 
     const handleClick = () => {
         setOpen(!open);
     };
     return (
         <>
-            <ListItem button onClick={handleClick}>
+            <ListItem ref={ref} button onClick={handleClick}>
                 <ListItemIcon>
                 <InboxIcon />
                 </ListItemIcon>
                 <ListItemText primary={name} />
                 {open ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse ref={ref} in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                     {
                         subitems.map(item => (
