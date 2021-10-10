@@ -3,19 +3,15 @@ import React, { useEffect } from 'react';
 import { Grid } from "@material-ui/core";
 import SideBar from "./components/SideBar";
 import Main from './components/Main';
-import { useNavigate } from 'react-router';
+import {withRouter} from '../../components/withRoute'
 
 MainLayout.propTypes = {
     
 };
 
 function MainLayout(props) {
-    const navigate = useNavigate();
     useEffect(() =>{
-        const token = localStorage.getItem('access_token');
-        if(!token){
-            navigate('/login')
-        }
+        
     })
     return (
         <>
@@ -29,4 +25,4 @@ function MainLayout(props) {
     );
 }
 
-export default MainLayout;
+export default withRouter(MainLayout);

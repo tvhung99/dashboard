@@ -11,6 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router';
+import {useCookies} from 'react-cookie';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -28,10 +29,12 @@ SideBar.propTypes = {
 function SideBar(props) {
     const classes = useStyles();
     const navigate = useNavigate()
+    const [cookie , setCookie , removeCookie] = useCookies(['token','user']);
     const handleLogout = () =>{
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('user');
-      navigate('/');
+      if(cookie){
+        removeCookie('token');
+        navigate('/login');
+      }
     }
 
     return (

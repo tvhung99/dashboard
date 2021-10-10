@@ -33,21 +33,20 @@ Nested.propTypes = {
 function Nested({name , subitems}) {
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
-    const ref = useRef();
 
     const handleClick = () => {
         setOpen(!open);
     };
     return (
         <>
-            <ListItem ref={ref} button onClick={handleClick}>
+            <ListItem button onClick={handleClick}>
                 <ListItemIcon>
                 <InboxIcon />
                 </ListItemIcon>
                 <ListItemText primary={name} />
                 {open ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
-            <Collapse ref={ref} in={open} timeout="auto" unmountOnExit>
+            <Collapse in={open} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                     {
                         subitems.map(item => (
