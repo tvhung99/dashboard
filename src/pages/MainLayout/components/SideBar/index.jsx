@@ -12,6 +12,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useNavigate } from 'react-router';
 import {useCookies} from 'react-cookie';
+import { useSelector } from 'react-redux';
+import userApi from '../../../../api/userApi';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -27,11 +29,20 @@ SideBar.propTypes = {
 };
 
 function SideBar(props) {
+    const token = useSelector((state) => state.auth.token);
     const classes = useStyles();
     const navigate = useNavigate()
     const [cookie , setCookie , removeCookie] = useCookies(['token','user']);
-    const handleLogout = () =>{
+    const handleLogout = async () =>{
       if(cookie){
+        await userApi.logout({
+            headers : {
+              'Content-Type': 'application/json;charset=UTF-8',
+              'Access-Control-Allow-Origin': "*",
+              "Authorization":"Bearer "+ token,
+          }
+        })
+
         removeCookie('token');
         navigate('/login');
       }

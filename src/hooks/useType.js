@@ -5,7 +5,7 @@ export default function useType(){
     useEffect(() => {
         (async () =>{
             const data = await typeApi.get();
-            setType(data.data)
+            setType(data)
         })()
     },[])
     return type;

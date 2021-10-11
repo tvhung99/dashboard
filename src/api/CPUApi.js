@@ -6,7 +6,7 @@ const CPUApi = {
     //     return axiosClient.post(url , data , config);
     // },
     get(){
-        const url = '/cpu';
+        const url = '/cpu/active';
         return axiosClient.get(url);
     }
 }

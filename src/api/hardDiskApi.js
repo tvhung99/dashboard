@@ -6,7 +6,7 @@ const hardDiskApi = {
     //     return axiosClient.post(url , data , config);
     // },
     get(){
-        const url = '/harddisk';
+        const url = '/harddisk/active';
         return axiosClient.get(url);
     }
 }

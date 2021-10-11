@@ -5,7 +5,7 @@ export default function useCPU(){
     useEffect(() => {
         (async () =>{
             const data = await CPUApi.get();
-            setCpu(data.data)
+            setCpu(data)
         })()
     },[])
     return cpu;

@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient';
 const ramApi = {
     get(){
-        const url = '/ram';
+        const url = '/ram/active';
         return axiosClient.get(url);
     }
 }

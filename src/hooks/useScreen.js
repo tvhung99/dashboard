@@ -5,7 +5,7 @@ export default function useScreen(){
     useEffect(() => {
         (async () =>{
             const data = await screenApi.get();
-            setScreen(data.data)
+            setScreen(data)
         })()
     },[])
     return screen;

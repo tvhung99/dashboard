@@ -5,7 +5,7 @@ export default function useCard(){
     useEffect(() => {
         (async () =>{
             const data = await cardApi.get();
-            setCard(data.data)
+            setCard(data)
         })()
     },[])
     return card;

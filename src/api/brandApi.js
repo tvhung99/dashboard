@@ -6,7 +6,7 @@ const brandApi = {
     //     return axiosClient.post(url , data , config);
     // },
     get(){
-        const url = '/brand';
+        const url = '/brand/active';
         return axiosClient.get(url);
     }
 }

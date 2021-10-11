@@ -5,7 +5,7 @@ export default function useHardDisk(){
     useEffect(() => {
         (async () =>{
             const data = await hardDiskApi.get();
-            setHardDisk(data.data)
+            setHardDisk(data)
         })()
     },[])
     return hardDisk;

@@ -5,7 +5,7 @@ export default function useBrand(){
     useEffect(() => {
         (async () =>{
             const data = await brandApi.get();
-            setBrand(data.data)
+            setBrand(data)
         })()
     },[])
     return brand;

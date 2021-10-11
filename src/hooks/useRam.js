@@ -5,7 +5,7 @@ export default function useType(){
     useEffect(() => {
         (async () =>{
             const data = await ramApi.get();
-            setRam(data.data)
+            setRam(data)
         })()
     },[])
     return ram;
