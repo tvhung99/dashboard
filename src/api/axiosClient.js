@@ -1,9 +1,11 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-    baseURL : 'http://192.168.55.2:80/',
+    baseURL : 'http://192.168.55.2:80/api/',
     headers:{
         'Content-Type':'application/json',
+        'Access-Control-Allow-Origin' : '*',
+        'Access-Control-Allow-Methods':'GET,PUT,POST,DELETE,PATCH,OPTIONS'
     }
 
 })

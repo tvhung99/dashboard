@@ -1,4 +1,5 @@
 import React from 'react';
+import ProductAdd from './ProductAdd';
 //import PropTypes from 'prop-types';
 
 Product.propTypes = {
@@ -8,7 +9,7 @@ Product.propTypes = {
 function Product(props) {
     return (
         <div>
-            Product Page
+           <ProductAdd />
         </div>
     );
 }
