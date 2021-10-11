@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import InputField from '../../../../../components/form-control/InputField';
-import { Button, Box, Grid, MenuItem } from '@material-ui/core';
+import { Button, Box, Grid, MenuItem, Input } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
@@ -13,6 +13,7 @@ import useCard from '../../../../../hooks/useCard';
 import useScreen from '../../../../../hooks/useScreen';
 import useType from '../../../../../hooks/useType';
 import useRam from '../../../../../hooks/useRam';
+import TextEditor from '../../../../../components/form-control/TextEditor';
 
 ProductAddForm.propTypes = {
     onSubmit : PropTypes.func,
@@ -60,7 +61,7 @@ function ProductAddForm({onSubmit}) {
             discount:'',
             product_detail:'',
             image1 :'',
-            image2:''
+            image2:'',
         },
         resolver : yupResolver(schema),
     })
@@ -139,7 +140,10 @@ function ProductAddForm({onSubmit}) {
                         <InputField name="image1" label="Ảnh 1"  form={form}/> 
                     </Grid>
                     <Grid item xs={3} md={3} lg={3} xl={3}>
-                        <InputField name="image2" label="Ảnh 2"  form={form}/> 
+                        <Input accept="image/*" id="icon-button-file" type="file" />    
+                    </Grid> 
+                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                        <TextEditor name="product_detail" form={form} />
                     </Grid>
                     <Button type="submit" variant="contained" color="primary" fullWidth >
                     Login
