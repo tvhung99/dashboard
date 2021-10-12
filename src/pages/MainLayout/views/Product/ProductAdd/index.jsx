@@ -33,7 +33,7 @@ function ProductAdd(props) {
         //     .catch((error) => console.log(error))
         // })()
 
-        console.log(values)
+        console.log(values.product_detail)
         
 
     }

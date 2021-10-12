@@ -1,25 +1,29 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import InputField from '../../../../../components/form-control/InputField';
-import { Button, Box, Grid, MenuItem, Input } from '@material-ui/core';
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { Box, Button, CardMedia, Grid, Input, MenuItem } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import * as yup from "yup";
-import useBrand from '../../../../../hooks/useBrand';
-import useCPU from '../../../../../hooks/useCPU';
+import InputField from '../../../../../components/form-control/InputField';
 import SelectField from '../../../../../components/form-control/SelectField';
-import useHardDisk from '../../../../../hooks/useHardDisk';
+import TextEditor from '../../../../../components/form-control/TextEditor';
+import useBrand from '../../../../../hooks/useBrand';
 import useCard from '../../../../../hooks/useCard';
+import useCPU from '../../../../../hooks/useCPU';
+import useHardDisk from '../../../../../hooks/useHardDisk';
+import useRam from '../../../../../hooks/useRam';
 import useScreen from '../../../../../hooks/useScreen';
 import useType from '../../../../../hooks/useType';
-import useRam from '../../../../../hooks/useRam';
-import TextEditor from '../../../../../components/form-control/TextEditor';
+import firebaseUpload from '../../../../../ulitilize/FirebaseUpload';
 
 ProductAddForm.propTypes = {
     onSubmit : PropTypes.func,
 };
 
 function ProductAddForm({onSubmit}) {
+    const [file , setFile] = useState([])
+    const [fileName , setFileName] = useState([]);
+    const [uploadFile , setUploadFile] = useState();
     const brand = useBrand();
     const hardDisk = useHardDisk();
     const card = useCard();
@@ -41,7 +45,7 @@ function ProductAddForm({onSubmit}) {
         camera:yup.string().required('Vui lòng nhập camera'),
         price:yup.string().required('Vui lòng nhập giá'),
         discount:yup.string().required('Vui lòng nhập giảm giá'),
-        image1 :yup.string().required('Vui lòng nhập ảnh 1'),
+        image :yup.array().of(yup.string().min(1,'Vui lòng thêm ảnh')).min(1),
         
       })
     const form = useForm({
@@ -60,14 +64,29 @@ function ProductAddForm({onSubmit}) {
             price:'',
             discount:'',
             product_detail:'',
-            image1 :'',
-            image2:'',
+            image :'',
         },
         resolver : yupResolver(schema),
     })
+   
     const handleSubmit = (values) => {
-        if(!onSubmit) return;
-        onSubmit(values);
+        values['image'] = fileName;
+        firebaseUpload(uploadFile)
+            .then(() => {
+                console.log('all file upload complete');
+                if(!onSubmit) return;
+                onSubmit(values);
+            })
+            .catch((e) => console.log(e.code))
+    }
+    const handleChange = (e)=>{
+        const list = Array.from(e.target.files);
+        setUploadFile(list)
+        const fn = (list.reduce((total , next) => total.concat(next.name) ,[]))
+        setFileName(fn);
+        const fshow = list.reduce((total , next) => total.concat(URL.createObjectURL(next)) , []);
+        setFile(fshow);
+
     }
     return (
         <form onSubmit={form.handleSubmit(handleSubmit)} style={{padding:'30px 20px'}}>
@@ -133,18 +152,36 @@ function ProductAddForm({onSubmit}) {
                     <Grid item xs={3} md={3} lg={3} xl={3}>
                         <InputField name="discount" label="Giảm giá(%)"  form={form}/> 
                     </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
-                        <InputField name="product_detail" label="Mô tả"  form={form}/> 
+                    
+                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                        <Input type="file" accept="image/*" name="image" inputProps={{multiple : true}} onChange={handleChange} />
+
                     </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
-                        <InputField name="image1" label="Ảnh 1"  form={form}/> 
-                    </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
-                        <Input accept="image/*" id="icon-button-file" type="file" />    
-                    </Grid> 
+                    {
+                        file.length > 0 && file.map(x => (
+                            
+
+                            <Grid key={x} item xs={4} md={4} lg={4} xl={4}>
+                                 <CardMedia
+                                    
+                                    component="img"
+                                    alt="Contemplative Reptile"
+                                    height="140"
+                                    image={x}
+                                    title="Contemplative Reptile"
+                                />
+
+                            </Grid>
+                           
+                        ))
+                                            
+             
+                    }
                     <Grid item xs={12} md={12} lg={12} xl={12}>
                         <TextEditor name="product_detail" form={form} />
                     </Grid>
+                    
+                    
                     <Button type="submit" variant="contained" color="primary" fullWidth >
                     Login
                 </Button>
