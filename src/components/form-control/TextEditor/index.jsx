@@ -34,6 +34,7 @@ function TextEditor({name , form , label , disable , defaultValue =""}) {
                               'bold italic backcolor | alignleft aligncenter ' +
                               'alignright alignjustify | bullist numlist outdent indent | ' +
                               'removeformat | help',
+                              height:'500px'
                         }}
                         value={value}
                         onEditorChange={handleEditorChange}

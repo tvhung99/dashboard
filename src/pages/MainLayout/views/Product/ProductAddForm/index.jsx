@@ -1,8 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, CardMedia, Grid, Input, MenuItem } from '@material-ui/core';
+import { Box, Button, CardMedia, Grid, Input, MenuItem, Typography } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router';
 import * as yup from "yup";
 import InputField from '../../../../../components/form-control/InputField';
 import SelectField from '../../../../../components/form-control/SelectField';
@@ -15,15 +16,36 @@ import useRam from '../../../../../hooks/useRam';
 import useScreen from '../../../../../hooks/useScreen';
 import useType from '../../../../../hooks/useType';
 import firebaseUpload from '../../../../../ulitilize/FirebaseUpload';
+import productApi from '../../../../../api/productApi';
 
 ProductAddForm.propTypes = {
     onSubmit : PropTypes.func,
 };
 
 function ProductAddForm({onSubmit}) {
+    const initValue = {
+        brand_id:'',
+        cpu_id:'',
+        product_name:'',
+        harddisk_id:"",
+        card_id:'',
+        screen_id:'',
+        class_id:"",
+        ram_id:'',
+        mass:'',
+        size:'',
+        camera:'',
+        price:'',
+        discount:'',
+        product_detail:'',
+        images :[],
+    }
+    const params = useParams();
+    const id = params.id;
     const [file , setFile] = useState([])
     const [fileName , setFileName] = useState([]);
     const [uploadFile , setUploadFile] = useState();
+    const [image,setImage] = useState();
     const brand = useBrand();
     const hardDisk = useHardDisk();
     const card = useCard();
@@ -31,6 +53,8 @@ function ProductAddForm({onSubmit}) {
     const monitor = useScreen();
     const ram = useRam();
     const type = useType();
+    const [loading , setLoading]= useState(true)
+    const [error, setError] = useState(false);
     const schema = yup.object({
         brand_id: yup.string().required('Vui lòng chọn thương hiệu'),
         screen_id:yup.string().required('Vui lòng chọn màn hình'),
@@ -45,39 +69,42 @@ function ProductAddForm({onSubmit}) {
         camera:yup.string().required('Vui lòng nhập camera'),
         price:yup.string().required('Vui lòng nhập giá'),
         discount:yup.string().required('Vui lòng nhập giảm giá'),
-        image :yup.array().of(yup.string().min(1,'Vui lòng thêm ảnh')).min(1),
+        images :yup.array().of(yup.string().min(1,'Vui lòng thêm ảnh')).min(1),
         
       })
-    const form = useForm({
-        defaultValues:{
-            brand_id:'',
-            cpu_id:'',
-            product_name:'',
-            harddisk_id:"",
-            card_id:'',
-            screen_id:'',
-            class_id:"",
-            ram_id:'',
-            mass:'',
-            size:'',
-            camera:'',
-            price:'',
-            discount:'',
-            product_detail:'',
-            image :'',
-        },
+    const form  = useForm({
+        defaultValues: initValue,
         resolver : yupResolver(schema),
-    })
+    }) 
+
+    useEffect(() => {
+        if(id){
+            (async () =>{
+                const data = await productApi.getById(id);
+                if(data){
+                    setLoading(false);
+                    Object.keys(data).forEach(key => form.setValue(key, data[key]))
+                }
+    
+            })()
+            
+        }
+    },[id,form])
+    
    
     const handleSubmit = (values) => {
-        values['image'] = fileName;
-        firebaseUpload(uploadFile)
-            .then(() => {
-                console.log('all file upload complete');
-                if(!onSubmit) return;
-                onSubmit(values);
-            })
-            .catch((e) => console.log(e.code))
+        if(id) values['images'] = fileName.length > 0 ? fileName : ['default-image.jpg'];
+
+        if(uploadFile){
+            firebaseUpload(uploadFile)
+                .then(() => {
+                    console.log('all file upload complete');
+                })
+                .catch((e) => console.log(e.code))
+        }
+        if(!onSubmit) return;
+        onSubmit(values);
+       
     }
     const handleChange = (e)=>{
         const list = Array.from(e.target.files);
@@ -89,6 +116,9 @@ function ProductAddForm({onSubmit}) {
 
     }
     return (
+        <>
+        {id && (loading && <Typography>Loading</Typography>)}
+        {id ? <Typography>Sửa sản phẩm </Typography> : <Typography>Thêm sản phẩm</Typography> }
         <form onSubmit={form.handleSubmit(handleSubmit)} style={{padding:'30px 20px'}}>
             <Box>
                 <Grid container spacing={2} style={{alignItems:'center'}}>
@@ -189,6 +219,8 @@ function ProductAddForm({onSubmit}) {
                 
             </Box>
         </form>
+
+        </>
     );
 }
 

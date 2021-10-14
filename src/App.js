@@ -1,19 +1,19 @@
 import { Grid } from "@material-ui/core";
-import MainLayout from "./pages/MainLayout";
-import { Routes , Route , Navigate} from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Auth from "./pages/AuthLayout";
 import ProtectedRoute from "./pages/AuthLayout/ProtectedRoute";
-import { useCookies } from 'react-cookie';
-import {useEffect , useState} from 'react'
+import MainLayout from "./pages/MainLayout";
 
 
 
 function App() {
-  const [cookie , setCookie ] = useCookies(['token' ,'user']);
+  const token = useSelector((state) => state.auth.token);
   const [isAuth , setIsAuth] = useState(false)
   useEffect(()=>{
-      if(cookie.token) setIsAuth(true)
-  },[cookie])
+      if(token) setIsAuth(true)
+  },[token])
   return (
     <Grid container spacing={0}>
         <Routes>
@@ -29,7 +29,9 @@ function App() {
             <Route path='/dashboard'>
               <Navigate to="/"/>
             </Route> 
-            <ProtectedRoute path='/*' component={MainLayout} isAuth={isAuth} />
+            <ProtectedRoute path='//*' component={MainLayout} isAuth={isAuth} />
+           
+
             {/* <Route path='/*' element={<MainLayout />}/> */}
         </Routes>
     </Grid>

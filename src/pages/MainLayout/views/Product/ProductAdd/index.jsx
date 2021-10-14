@@ -2,6 +2,7 @@ import React from 'react';
 import ProductAddForm from '../ProductAddForm';
 import { useSelector } from 'react-redux';
 import productApi from '../../../../../api/productApi';
+import firebaseUpload from '../../../../../ulitilize/FirebaseUpload';
 
 ProductAdd.propTypes = {
     
@@ -33,7 +34,7 @@ function ProductAdd(props) {
         //     .catch((error) => console.log(error))
         // })()
 
-        console.log(values.product_detail)
+        console.log(values)
         
 
     }

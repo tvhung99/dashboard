@@ -8,5 +8,6 @@ export default function useType(){
             setRam(data)
         })()
     },[])
+
     return ram;
 }

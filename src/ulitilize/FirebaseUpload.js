@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytesResumable } from "firebase/storage";
 
 
 
@@ -20,27 +20,27 @@ const storage = getStorage(firebase)
 
 const firebaseUpload = (files) =>{
   const promises = [];
-  files.forEach((file) =>{
-    const metadata = {
-      contentType: 'image/jpeg'
-    };
+      files.forEach((file) =>{
+      const metadata = {
+        contentType: 'image/jpeg'
+      };
 
-    const storageRef = ref(storage, 'images/' + file.name);
-    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-    promises.push(uploadTask)
-    uploadTask.on('state_changed',
-      (snapshot) => {}, 
-      (error) => {
-        alert('Could\'t upload file')
-      }, 
-      () =>  {
-        // Upload completed successfully, now we can get the download URL
-       
-      }
-    );
-  
-  
-  })
-  return Promise.all(promises);
+      const storageRef = ref(storage, 'images/' + file.name);
+      const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+      promises.push(uploadTask)
+      uploadTask.on('state_changed',
+        (snapshot) => {}, 
+        (error) => {
+          alert('Could\'t upload file')
+        }, 
+        () =>  {
+          // Upload completed successfully, now we can get the download URL
+        
+        }
+      );
+    
+    
+    })
+    return Promise.all(promises);
 }
 export default firebaseUpload;
