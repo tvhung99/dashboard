@@ -16,6 +16,7 @@ function InputField({form , name , label , disable}) {
     const hasError = formState.touched[name] && errors[name];
     return (
         <Controller 
+            style={{marginTop :5}}
             name={name}
             control={form.control}
             as={TextField}

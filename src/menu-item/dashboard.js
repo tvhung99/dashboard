@@ -1,5 +1,37 @@
 export const nested = [
     {
+        id:'product',
+        name:'Sản phẩm',
+        subitems: [
+           {
+                id:'create-product',
+                name:'Thêm sản phẩm',
+                link:'/san-pham/them-moi'
+           },
+           {
+                id:'update-product',
+                name:'Thống kê sản phẩm',
+                link:'/san-pham/'
+            }
+        ]
+    },
+    {
+        id:'article',
+        name:'Bài viết',
+        subitems: [
+           {
+                id:'create-article',
+                name:'Thêm bài viết',
+                link:'/bai-viet/them-moi'
+           },
+           {
+                id:'update-article',
+                name:'Thống kê bài viết',
+                link:'/bai-viet/'
+            }
+        ]
+    },
+    {
         id:'hardware',
         icon:'dashboard',
         name:'Phần cứng',
@@ -47,7 +79,7 @@ export const nested = [
                 link:'/phan-cung/dong-may'
             }
         ]
-    }
+    },
 ]
 
 export const single = [

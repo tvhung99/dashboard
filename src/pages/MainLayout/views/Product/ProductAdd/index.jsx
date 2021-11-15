@@ -2,39 +2,44 @@ import React from 'react';
 import ProductAddForm from '../ProductAddForm';
 import { useSelector } from 'react-redux';
 import productApi from '../../../../../api/productApi';
-import firebaseUpload from '../../../../../ulitilize/FirebaseUpload';
+import { PropTypes } from 'prop-types';
+import { useParams, useNavigate } from 'react-router';
 
 ProductAdd.propTypes = {
-    
+    type : PropTypes.oneOf(['create' ,'update']),
 };
 
-function ProductAdd(props) {
+function ProductAdd({type}) {
     const token = useSelector((state) => state.auth.token);
+    const params = useParams();
+    const navigate = useNavigate();
 
     const handleAddProductSubmit = (values) =>{
-        // const formatValue = {...values};
-        // formatValue.images = [
-        //     {
-        //         url : formatValue.image1
-        //     },
-        //     {
-        //         url : formatValue.image2
-        //     }
-        // ]
-        // delete formatValue.image1;
-        // delete formatValue.image2;
-        // (async ()=> {
-        //     await productApi.create([formatValue] , {
-        //         headers : {
-        //             'Content-Type': 'application/json;charset=UTF-8',
-        //             'Access-Control-Allow-Origin': "*",
-        //             "Authorization":"Bearer "+ token,
-        //         }
-        //     }).then(() => console.log('OK'))
-        //     .catch((error) => console.log(error))
-        // })()
+        const submitValue = {...values};
+        submitValue.images = submitValue.images.map(x => ({url : x}));
+        (async ()=> {
+            type === 'create' ? await productApi.create([submitValue] , {
+                    headers : {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                        'Access-Control-Allow-Origin': "*",
+                        "Authorization":"Bearer "+ token,
+                    }
+                }).then(() => alert('OK'))
+                .catch((error) => console.log(error)) 
+            : await productApi.update(params.id ,submitValue , {
+                    headers : {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                        'Access-Control-Allow-Origin': "*",
+                        "Authorization":"Bearer "+ token,
+                    }
+                }).then(() => {
+                    alert('OK') ; 
+                    navigate('/san-pham')
+                })
+                .catch((error) => console.log(error)) 
+        })()
+    
 
-        console.log(values)
         
 
     }

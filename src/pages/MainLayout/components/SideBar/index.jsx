@@ -9,9 +9,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import userApi from '../../../../api/userApi';
-import { nested, single } from '../../../../menu-item/dashboard';
+import { nested } from '../../../../menu-item/dashboard';
 import Nested from './List/Nested';
-import Single from './List/Single';
 import './style.css';
 
 const useStyles = makeStyles((theme) => ({
@@ -55,9 +54,9 @@ function SideBar(props) {
           }
           className={classes.root}
         >
-            {
+            {/* {
                 single.map(link => <Single  key={link.id} icon={link.icon} link={link.link} name={link.name} />)
-            }
+            } */}
             {
                 nested.map(item => <Nested key={item.id} name={item.name} subitems={item.subitems} />)
             }

@@ -1,19 +1,17 @@
-import React, { useEffect , useState } from 'react';
-import PropTypes from 'prop-types';
 import { Box, Button, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import productApi from '../../../../../../api/productApi';
+import { Pagination } from '@material-ui/lab';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { Pagination } from '@material-ui/lab';
+import productApi from '../../../../../../api/productApi';
 
 
 TableProduct.propTypes = {
-    
 };
 
 //const LINK = 'https://firebasestorage.googleapis.com/v0/b/techshop-2ee9d.appspot.com/o/images';
-const head = ['', 'Tên sản phẩm' , 'Giá','CPU' , 'Ổ cứng' ,'Hãng sản xuất' , 'RAM' ,'Card đồ hoạ','Dòng máy','Màn hình','Trọng lượng','Giảm giá' ,'Thông tin chi tiết','Ảnh'];
+const head = ['', 'Tên sản phẩm' , 'Giá','CPU' , 'Ổ cứng' ,'Hãng sản xuất' , 'RAM' ,'Card đồ hoạ','Dòng máy','Màn hình','Trọng lượng','Giảm giá' ,'Ảnh'];
 const useStyles = makeStyles({
     root: {
         maxWidth: "100%",
@@ -40,7 +38,7 @@ const useStyles = makeStyles({
 })
 
 
-function TableProduct(props) {
+function TableProduct() {
     const token = useSelector((state) => state.auth.token);
     const [check,setCheck] = useState(false);
     const [product , setProduct] = useState([]);
@@ -51,7 +49,6 @@ function TableProduct(props) {
     useEffect(() =>{
         (async () =>{
             try {
-                console.log(filter);
                 const {data , last_page , current_page} = await productApi.getProductActiveDetail(filter);
                 
                 setProduct(data);
@@ -64,10 +61,9 @@ function TableProduct(props) {
     },[check , filter])
     const classes = useStyles();
     const updateProduct =(id) =>{
-        navigate('/san-pham/update/'+id)
+        navigate('/san-pham/cap-nhat/'+id)
     }
     const removeProduct = async (id) =>{
-        console.log(token);
         const config = {
             headers : {
                 'Content-Type': 'application/json;charset=UTF-8',
@@ -113,7 +109,7 @@ function TableProduct(props) {
                                     <TableCell className={classes.cell}>{row.screen_detail}</TableCell>
                                     <TableCell className={classes.cell}>{row.mass}</TableCell>
                                     <TableCell className={classes.cell}>{row.discount}</TableCell>
-                                    <TableCell className={classes.cell}>{row.product_detail}</TableCell>
+                                    {/* <TableCell className={classes.cell}>{row.product_detail}</TableCell> */}
                                     <TableCell className={classes.cell} style={{maxWidth:400}}>{row.image_product.reduce((total , next) => total + next.url +',' , '')}</TableCell> {/*  <img style={{maxWidth:100}} src={`${LINK}%2F${x.url}?alt=media`} alt="" /> */}
                                 </TableRow>
                             )

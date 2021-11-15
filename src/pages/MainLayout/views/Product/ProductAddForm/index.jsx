@@ -1,10 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CardMedia, Grid, Input, MenuItem, Typography } from '@material-ui/core';
+import { Label } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
 import * as yup from "yup";
+import productApi from '../../../../../api/productApi';
 import InputField from '../../../../../components/form-control/InputField';
 import SelectField from '../../../../../components/form-control/SelectField';
 import TextEditor from '../../../../../components/form-control/TextEditor';
@@ -16,13 +18,25 @@ import useRam from '../../../../../hooks/useRam';
 import useScreen from '../../../../../hooks/useScreen';
 import useType from '../../../../../hooks/useType';
 import firebaseUpload from '../../../../../ulitilize/FirebaseUpload';
-import productApi from '../../../../../api/productApi';
-
+import { makeStyles } from '@material-ui/core/styles';
+import choose from '../../../../../assests/images/choose.png'
 ProductAddForm.propTypes = {
     onSubmit : PropTypes.func,
 };
 
+const useStyles = makeStyles(() =>({
+    imageLabel : {
+        display:'block',
+        width:50,
+        height:50,
+        background:`url(${choose}) center / contain no-repeat`,
+        marginTop:20,
+        cursor : 'pointer'
+    }
+}))
+
 function ProductAddForm({onSubmit}) {
+    const classes = useStyles();
     const initValue = {
         brand_id:'',
         cpu_id:'',
@@ -45,7 +59,6 @@ function ProductAddForm({onSubmit}) {
     const [file , setFile] = useState([])
     const [fileName , setFileName] = useState([]);
     const [uploadFile , setUploadFile] = useState();
-    const [image,setImage] = useState();
     const brand = useBrand();
     const hardDisk = useHardDisk();
     const card = useCard();
@@ -54,7 +67,7 @@ function ProductAddForm({onSubmit}) {
     const ram = useRam();
     const type = useType();
     const [loading , setLoading]= useState(true)
-    const [error, setError] = useState(false);
+
     const schema = yup.object({
         brand_id: yup.string().required('Vui lòng chọn thương hiệu'),
         screen_id:yup.string().required('Vui lòng chọn màn hình'),
@@ -93,8 +106,7 @@ function ProductAddForm({onSubmit}) {
     
    
     const handleSubmit = (values) => {
-        if(id) values['images'] = fileName.length > 0 ? fileName : ['default-image.jpg'];
-
+        if(id) values['images'] = fileName.length > 0 ? fileName : ['placeholder-image.jpeg'];
         if(uploadFile){
             firebaseUpload(uploadFile)
                 .then(() => {
@@ -122,70 +134,71 @@ function ProductAddForm({onSubmit}) {
         <form onSubmit={form.handleSubmit(handleSubmit)} style={{padding:'30px 20px'}}>
             <Box>
                 <Grid container spacing={2} style={{alignItems:'center'}}>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <InputField name="product_name" label="Tên sản phẩm"  form={form}/>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <SelectField name="brand_id" label="Thương Hiệu"  form={form}>
                             <MenuItem  value="">Chọn Thương Hiệu</MenuItem>
                             {brand.map((br) => (<MenuItem key={br.brand_id} value={br.brand_id}>{br.brand_name}</MenuItem>))}
                         </SelectField>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <SelectField name="harddisk_id" label="Ổ cứng"  form={form}>
                             <MenuItem  value="">Chọn Ổ Cứng</MenuItem>
                             {hardDisk.map((item) => (<MenuItem key={item.harddisk_id} value={item.harddisk_id}>{item.capacity_harddisk}</MenuItem>))}
                         </SelectField>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <SelectField name="card_id" label="Card Đồ Hoạ"  form={form}>
                             <MenuItem  value="">Chọn Card Đồ Hoạ</MenuItem>
                             {card.map((item) => (<MenuItem key={item.card_id} value={item.card_id}>{item.card_detail}</MenuItem>))}
                         </SelectField>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <SelectField name="screen_id" label="Màn Hình"  form={form}>
                             <MenuItem  value="">Chọn Màn Hình</MenuItem>
                             {monitor.map((item) => (<MenuItem key={item.screen_id} value={item.screen_id}>{item.screen_detail}</MenuItem>))}
                         </SelectField>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <SelectField name="class_id" label="Dòng Máy"  form={form}>
                             <MenuItem  value="">Chọn Dòng Máy</MenuItem>
                             {type.map((item) => (<MenuItem key={item.class_id} value={item.class_id}>{item.class_name}</MenuItem>))}
                         </SelectField>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <SelectField name="cpu_id" label="CPU"  form={form}>
                             <MenuItem  value="">Chọn CPU</MenuItem>
                             {cpu.map((item) => (<MenuItem key={item.cpu_id} value={item.cpu_id}>{item.cpu_name}</MenuItem>))}
                         </SelectField>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <SelectField name="ram_id" label="RAM"  form={form}>
                             <MenuItem  value="">Chọn RAM</MenuItem>
                             {ram.map((item) => (<MenuItem key={item.ram_id} value={item.ram_id}>{item.ram_detail}</MenuItem>))}
                         </SelectField>
                     </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <InputField name="mass" label="Cân nặng"  form={form}/> 
                     </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <InputField name="size" label="Kích thước"  form={form}/> 
                     </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <InputField name="camera" label="Camera"  form={form}/> 
                     </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <InputField name="price" label="Giá"  form={form}/> 
                     </Grid>
-                    <Grid item xs={3} md={3} lg={3} xl={3}>
+                    <Grid item xs={12} md={12} lg={4} xl={4}>
                         <InputField name="discount" label="Giảm giá(%)"  form={form}/> 
                     </Grid>
                     
                     <Grid item xs={12} md={12} lg={12} xl={12}>
-                        <Input type="file" accept="image/*" name="image" inputProps={{multiple : true}} onChange={handleChange} />
-
+                        <span>Ảnh sản phẩm </span>
+                        <label htmlFor="image" className={classes.imageLabel}></label>
+                        <Input type="file" accept="image/*" name="image" id="image" inputProps={{multiple : true}} onChange={handleChange} style={{opacity:0 , visibility:'hidden'}} />
                     </Grid>
                     {
                         file.length > 0 && file.map(x => (

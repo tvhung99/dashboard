@@ -1,15 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Collapse from '@material-ui/core/Collapse';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
+import { makeStyles } from '@material-ui/core/styles';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import StarBorder from '@material-ui/icons/StarBorder';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,6 +22,9 @@ const useStyles = makeStyles((theme) => ({
       color:'black',
       fontWeight:'700'
     },
+    item:{
+        paddingLeft : 30,
+    }
   }));
 
 Nested.propTypes = {
@@ -32,7 +34,7 @@ Nested.propTypes = {
 
 function Nested({name , subitems}) {
     const classes = useStyles();
-    const [open, setOpen] = React.useState(true);
+    const [open, setOpen] = React.useState(false);
 
     const handleClick = () => {
         setOpen(!open);
@@ -51,10 +53,7 @@ function Nested({name , subitems}) {
                     {
                         subitems.map(item => (
                             <ListItem key={item.id}  component={NavLink} to={item.link} className={classes.nested}>
-                                <ListItemIcon>
-                                    <StarBorder />
-                                </ListItemIcon>
-                                <ListItemText primary={item.name} />
+                                <ListItemText className={classes.item} primary={item.name} />
                             </ListItem>
                         ))
                     }

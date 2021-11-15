@@ -18,7 +18,7 @@ function MainLayout(props) {
             <Grid item xs={3} md={3} sm={3} lg={3}>
                 <SideBar />
             </Grid>
-            <Grid item xs={9} md={9} sm={9} lg={9} style={{background:'#E3F3FD',height:'100vh',maxHeight:'100vh',overflowY:'auto',borderRadius:'30px'}}>
+            <Grid item xs={9} md={9} sm={9} lg={9} style={{height:'100vh',borderRadius:'30px'}}>
                 <Main />
             </Grid>
         </> 
