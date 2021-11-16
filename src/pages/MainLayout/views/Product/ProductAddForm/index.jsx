@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CardMedia, Grid, Input, MenuItem, Typography } from '@material-ui/core';
 import { Label } from '@material-ui/icons';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
 import * as yup from "yup";
@@ -17,9 +17,10 @@ import useHardDisk from '../../../../../hooks/useHardDisk';
 import useRam from '../../../../../hooks/useRam';
 import useScreen from '../../../../../hooks/useScreen';
 import useType from '../../../../../hooks/useType';
-import firebaseUpload from '../../../../../ulitilize/FirebaseUpload';
 import { makeStyles } from '@material-ui/core/styles';
 import choose from '../../../../../assests/images/choose.png'
+import upload from '../../../../../api/upload';
+import { useSelector } from 'react-redux';
 ProductAddForm.propTypes = {
     onSubmit : PropTypes.func,
 };
@@ -37,27 +38,13 @@ const useStyles = makeStyles(() =>({
 
 function ProductAddForm({onSubmit}) {
     const classes = useStyles();
-    const initValue = {
-        brand_id:'',
-        cpu_id:'',
-        product_name:'',
-        harddisk_id:"",
-        card_id:'',
-        screen_id:'',
-        class_id:"",
-        ram_id:'',
-        mass:'',
-        size:'',
-        camera:'',
-        price:'',
-        discount:'',
-        product_detail:'',
-        images :[],
-    }
+    
     const params = useParams();
     const id = params.id;
     const [file , setFile] = useState([])
     const [fileName , setFileName] = useState([]);
+    const [imgs , setImgs] = useState([]);
+    const [prod , setProd] = useState({});
     const [uploadFile , setUploadFile] = useState();
     const brand = useBrand();
     const hardDisk = useHardDisk();
@@ -85,35 +72,68 @@ function ProductAddForm({onSubmit}) {
         images :yup.array().of(yup.string().min(1,'Vui lòng thêm ảnh')).min(1),
         
       })
-    const form  = useForm({
-        defaultValues: initValue,
-        resolver : yupResolver(schema),
-    }) 
+
 
     useEffect(() => {
         if(id){
             (async () =>{
                 const data = await productApi.getById(id);
+                console.log(data);
                 if(data){
+                    console.log(data);
+                    setProd(data)
+                    setImgs(data.image_product);
                     setLoading(false);
-                    Object.keys(data).forEach(key => form.setValue(key, data[key]))
+                    
+                    
                 }
-    
+                return () =>{}
             })()
             
         }
-    },[id,form])
-    
+    },[id])
+    const initValue = {
+        brand_id:prod.brand_id || '',
+        cpu_id:prod.cpu_id || '',
+        product_name:prod.product_name || '',
+        harddisk_id:prod.harddisk_id||"",
+        card_id:prod.card_id||'',
+        screen_id:prod.screen_id||'',
+        class_id:prod.class_id || "",
+        ram_id:prod.ram_id||'',
+        mass:prod.mass ||'',
+        size:prod.size||'',
+        camera:prod.camera||'',
+        price:prod.price || '',
+        discount:prod.discount||'',
+        product_detail:prod.product_detail||'',
+        images :[],
+    }
+    const form  = useForm({
+        defaultValues: initValue,
+        resolver : yupResolver(schema),
+    }) 
+    useMemo(() =>{
+        Object.keys(prod).forEach(key => form.setValue(key, prod[key]))
+    },[prod , form])
    
-    const handleSubmit = (values) => {
-        if(id) values['images'] = fileName.length > 0 ? fileName : ['placeholder-image.jpeg'];
+    
+    const token = useSelector(state => state.auth.token);
+   
+    const handleSubmit = async (values) => {
+        let formData = new FormData();
         if(uploadFile){
-            firebaseUpload(uploadFile)
-                .then(() => {
-                    console.log('all file upload complete');
-                })
-                .catch((e) => console.log(e.code))
+            uploadFile.forEach(file => formData.append('image[]',file));
+            const images = await upload.upload(formData , {
+                headers : {
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Access-Control-Allow-Origin': "*",
+                    "Authorization":"Bearer "+ token,
+                }
+            })
+            values.images = images;
         }
+        else values.image = imgs;
         if(!onSubmit) return;
         onSubmit(values);
        
@@ -127,6 +147,7 @@ function ProductAddForm({onSubmit}) {
         setFile(fshow);
 
     }
+    console.log(file);
     return (
         <>
         {id && (loading && <Typography>Loading</Typography>)}
@@ -201,24 +222,16 @@ function ProductAddForm({onSubmit}) {
                         <Input type="file" accept="image/*" name="image" id="image" inputProps={{multiple : true}} onChange={handleChange} style={{opacity:0 , visibility:'hidden'}} />
                     </Grid>
                     {
-                        file.length > 0 && file.map(x => (
-                            
-
-                            <Grid key={x} item xs={4} md={4} lg={4} xl={4}>
-                                 <CardMedia
-                                    
-                                    component="img"
-                                    alt="Contemplative Reptile"
-                                    height="140"
-                                    image={x}
-                                    title="Contemplative Reptile"
-                                />
-
-                            </Grid>
-                           
+                        imgs.length > 0 && file.length === 0 && imgs.map(x => (
+                            <img src={`${process.env.REACT_APP_UPLOAD_BACKEND}/${x.url}`} alt="1" width="200px" />
                         ))
-                                            
-             
+                    }
+                    {
+                        file.length > 0 && file.map(x => (
+                            <Grid key={x} item xs={4} md={4} lg={4} xl={4}>
+                                <img src={x} width="100%" alt="a" />
+                            </Grid>
+                        ))
                     }
                     <Grid item xs={12} md={12} lg={12} xl={12}>
                         <TextEditor name="product_detail" form={form} />

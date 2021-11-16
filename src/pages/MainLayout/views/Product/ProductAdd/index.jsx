@@ -15,10 +15,8 @@ function ProductAdd({type}) {
     const navigate = useNavigate();
 
     const handleAddProductSubmit = (values) =>{
-        const submitValue = {...values};
-        submitValue.images = submitValue.images.map(x => ({url : x}));
         (async ()=> {
-            type === 'create' ? await productApi.create([submitValue] , {
+            type === 'create' ? await productApi.create([values] , {
                     headers : {
                         'Content-Type': 'application/json;charset=UTF-8',
                         'Access-Control-Allow-Origin': "*",
@@ -26,7 +24,7 @@ function ProductAdd({type}) {
                     }
                 }).then(() => alert('OK'))
                 .catch((error) => console.log(error)) 
-            : await productApi.update(params.id ,submitValue , {
+            : await productApi.update(params.id ,values , {
                     headers : {
                         'Content-Type': 'application/json;charset=UTF-8',
                         'Access-Control-Allow-Origin': "*",
