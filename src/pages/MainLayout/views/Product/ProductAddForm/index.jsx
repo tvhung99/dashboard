@@ -78,7 +78,6 @@ function ProductAddForm({onSubmit}) {
         if(id){
             (async () =>{
                 const data = await productApi.getById(id);
-                console.log(data);
                 if(data){
                     console.log(data);
                     setProd(data)
@@ -147,7 +146,22 @@ function ProductAddForm({onSubmit}) {
         setFile(fshow);
 
     }
-    console.log(file);
+    const handleArticleImageChange = async (e) =>{
+        let formData = new FormData();
+        const f = e.target.files;
+        Array.from(f).forEach(i =>formData.append("thumbnail",i) )
+        
+        const url = await upload.upload(formData , {
+            headers : {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Access-Control-Allow-Origin': "*",
+                "Authorization":"Bearer "+ token,
+            }
+        })
+        alert(process.env.REACT_APP_UPLOAD_BACKEND+url);
+    
+    }
+
     return (
         <>
         {id && (loading && <Typography>Loading</Typography>)}
@@ -233,6 +247,18 @@ function ProductAddForm({onSubmit}) {
                             </Grid>
                         ))
                     }
+                    <Grid item xs={12} md={12} lg={12} xl={12}>
+                        <span>Ảnh để insert bài viêt</span>
+                        <label htmlFor="thubmnail" style={{display:'block',
+                            width:50,
+                            height:50,
+                            background:`url(${choose}) center / contain no-repeat`,
+                            marginTop:20,
+                            cursor : 'pointer'}}>
+
+                        </label>
+                        <Input type="file" accept="image/*" name="thumbnail" id="thubmnail" onChange={handleArticleImageChange} style={{opacity:0 , visibility:'hidden'}} />
+                    </Grid>
                     <Grid item xs={12} md={12} lg={12} xl={12}>
                         <TextEditor name="product_detail" form={form} />
                     </Grid>
