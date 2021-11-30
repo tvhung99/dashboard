@@ -6,7 +6,10 @@ ProductStatistic.propTypes = {
 
 function ProductStatistic({response}) {
     return (
-        <TableProduct />
+       <>
+            
+            <TableProduct />
+       </>
     );
 }
 

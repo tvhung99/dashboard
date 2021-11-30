@@ -1,15 +1,19 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Box, Button, CardMedia, Grid, Input, MenuItem, Typography } from '@material-ui/core';
-import { Label } from '@material-ui/icons';
+import { Box, Button, Grid, Input, MenuItem, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import * as yup from "yup";
 import productApi from '../../../../../api/productApi';
+import upload from '../../../../../api/upload';
+import choose from '../../../../../assests/images/choose.png';
 import InputField from '../../../../../components/form-control/InputField';
 import SelectField from '../../../../../components/form-control/SelectField';
 import TextEditor from '../../../../../components/form-control/TextEditor';
+import Loading from '../../../../../components/Loading';
 import useBrand from '../../../../../hooks/useBrand';
 import useCard from '../../../../../hooks/useCard';
 import useCPU from '../../../../../hooks/useCPU';
@@ -17,12 +21,9 @@ import useHardDisk from '../../../../../hooks/useHardDisk';
 import useRam from '../../../../../hooks/useRam';
 import useScreen from '../../../../../hooks/useScreen';
 import useType from '../../../../../hooks/useType';
-import { makeStyles } from '@material-ui/core/styles';
-import choose from '../../../../../assests/images/choose.png'
-import upload from '../../../../../api/upload';
-import { useSelector } from 'react-redux';
 ProductAddForm.propTypes = {
     onSubmit : PropTypes.func,
+    isEdit : PropTypes.bool,
 };
 
 const useStyles = makeStyles(() =>({
@@ -33,16 +34,23 @@ const useStyles = makeStyles(() =>({
         background:`url(${choose}) center / contain no-repeat`,
         marginTop:20,
         cursor : 'pointer'
+    },
+    title:{
+        margin:'20px 0',
+        padding:'0 20px',
+        fontSize:22,
+        fontWeight:700,
+        color:'orange'
+
     }
 }))
 
-function ProductAddForm({onSubmit}) {
+function ProductAddForm({onSubmit , isEdit}) {
     const classes = useStyles();
     
     const params = useParams();
     const id = params.id;
     const [file , setFile] = useState([])
-    const [fileName , setFileName] = useState([]);
     const [imgs , setImgs] = useState([]);
     const [prod , setProd] = useState({});
     const [uploadFile , setUploadFile] = useState();
@@ -53,7 +61,7 @@ function ProductAddForm({onSubmit}) {
     const monitor = useScreen();
     const ram = useRam();
     const type = useType();
-    const [loading , setLoading]= useState(true)
+    const [loading , setLoading]= useState(true);
 
     const schema = yup.object({
         brand_id: yup.string().required('Vui lòng chọn thương hiệu'),
@@ -75,22 +83,17 @@ function ProductAddForm({onSubmit}) {
 
 
     useEffect(() => {
-        if(id){
-            (async () =>{
-                const data = await productApi.getById(id);
-                if(data){
-                    console.log(data);
-                    setProd(data)
-                    setImgs(data.image_product);
-                    setLoading(false);
-                    
-                    
-                }
-                return () =>{}
-            })()
-            
-        }
-    },[id])
+        isEdit &&  (async () =>{
+            const data = await productApi.getById(id);
+            if(data){
+                setProd(data)
+                setImgs(data.image_product);
+                setLoading(false);
+            }
+            return () =>{}
+        })()
+
+    },[isEdit,id])
     const initValue = {
         brand_id:prod.brand_id || '',
         cpu_id:prod.cpu_id || '',
@@ -114,7 +117,7 @@ function ProductAddForm({onSubmit}) {
     }) 
     useMemo(() =>{
         Object.keys(prod).forEach(key => form.setValue(key, prod[key]))
-    },[prod , form])
+    },[prod , form ])
    
     
     const token = useSelector(state => state.auth.token);
@@ -132,7 +135,7 @@ function ProductAddForm({onSubmit}) {
             })
             values.images = images;
         }
-        else values.image = imgs;
+        else values.images = imgs; // values.image nếu lỗi
         if(!onSubmit) return;
         onSubmit(values);
        
@@ -140,8 +143,6 @@ function ProductAddForm({onSubmit}) {
     const handleChange = (e)=>{
         const list = Array.from(e.target.files);
         setUploadFile(list)
-        const fn = (list.reduce((total , next) => total.concat(next.name) ,[]))
-        setFileName(fn);
         const fshow = list.reduce((total , next) => total.concat(URL.createObjectURL(next)) , []);
         setFile(fshow);
 
@@ -150,7 +151,6 @@ function ProductAddForm({onSubmit}) {
         let formData = new FormData();
         const f = e.target.files;
         Array.from(f).forEach(i =>formData.append("thumbnail",i) )
-        
         const url = await upload.upload(formData , {
             headers : {
                 'Content-Type': 'application/json;charset=UTF-8',
@@ -158,14 +158,14 @@ function ProductAddForm({onSubmit}) {
                 "Authorization":"Bearer "+ token,
             }
         })
-        alert(process.env.REACT_APP_UPLOAD_BACKEND+url);
+        alert(process.env.REACT_APP_UPLOAD_BACKEND + url);
     
     }
 
     return (
         <>
-        {id && (loading && <Typography>Loading</Typography>)}
-        {id ? <Typography>Sửa sản phẩm </Typography> : <Typography>Thêm sản phẩm</Typography> }
+        {isEdit && (loading && <Loading />)}
+        <Typography className={classes.title}>{isEdit ? "Sửa sản phẩm" : "Thêm sản phẩm mới"}</Typography>
         <form onSubmit={form.handleSubmit(handleSubmit)} style={{padding:'30px 20px'}}>
             <Box>
                 <Grid container spacing={2} style={{alignItems:'center'}}>
@@ -264,9 +264,9 @@ function ProductAddForm({onSubmit}) {
                     </Grid>
                     
                     
-                    <Button type="submit" variant="contained" color="primary" fullWidth >
-                    Login
-                </Button>
+                    <Button type="submit" variant="contained" style={{background:'orange' , color:'white' , fontWeight:700}} fullWidth >
+                        {isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}
+                    </Button>
                 </Grid>
                 
             </Box>

@@ -6,13 +6,28 @@ const articleApi = {
         return axiosClient.post(url , data , config);
     },
     update(id,data,config){
-        const url = `/product/${id}`;
+        const url = `/article/${id}`;
         return axiosClient.put(url,data,config);
     },
-    // get_active(){
-    //     const url = '/product/active';
-    //     return axiosClient.get(url);
-    // },
+    getActive(params){
+        const url = '/article/all';
+        return axiosClient.get(url , {params});
+    },
+    count(url){
+        return axiosClient.get(url);
+    },
+    remove(id,config){
+        const url = `/article/delete/${id}`;
+        return axiosClient.put(url,null,config);
+    },
+    getDeleted(){
+        const url = '/article/deleted';
+        return axiosClient.get(url);
+    },
+    undo(id , config){
+        const url = '/article/undo/'+id;
+        return axiosClient.put(url,null,config);
+    },
     getById(id){
         const url = '/article/'+id;
         return axiosClient.get(url);

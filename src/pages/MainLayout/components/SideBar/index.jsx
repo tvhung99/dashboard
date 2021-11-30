@@ -19,6 +19,10 @@ const useStyles = makeStyles((theme) => ({
       maxHeight: '100vh',
       backgroundColor: theme.palette.background.paper,
       overflowY : 'auto',
+      '& *':{
+        color:'rgba(100,100,100,1)',
+        fontWeight : 700
+      }
     }
   }));
 
@@ -45,6 +49,7 @@ function SideBar(props) {
 
     return (
         <List
+          style={{background:'#def3fd' ,height:'100%' , minHeight:'vh'}}
           component="nav"
           aria-labelledby="nested-list-subheader"
           subheader={
@@ -54,9 +59,6 @@ function SideBar(props) {
           }
           className={classes.root}
         >
-            {/* {
-                single.map(link => <Single  key={link.id} icon={link.icon} link={link.link} name={link.name} />)
-            } */}
             {
                 nested.map(item => <Nested key={item.id} name={item.name} subitems={item.subitems} />)
             }

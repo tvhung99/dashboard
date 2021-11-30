@@ -4,15 +4,10 @@ import { Pagination } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import productApi from '../../../../../../api/productApi';
+import articleApi from '../../../../../../api/articleApi';
 import Loading from '../../../../../../components/Loading';
-import { VNDFormart } from '../../../../../../ulitilize/format';
 
-TableProduct.propTypes = {
-};
-
-
-const head = ['', 'Tên sản phẩm' , 'Giá'];
+const head = ['', 'Tiêu đề' , 'Tác giả'];
 const useStyles = makeStyles({
     root: {
         maxWidth: "100%",
@@ -42,7 +37,10 @@ const useStyles = makeStyles({
       cellHeader:{
         minWidth:200,
         padding:'5px!important',
-        color:'white',
+        color:'white'
+
+
+,
         textTransform : 'uppercase',
         fontSize:16,
         fontWeight:600
@@ -89,25 +87,29 @@ const useStyles = makeStyles({
 
 })
 
-
-function TableProduct() {
+function TableArticle(props) {
     const token = useSelector((state) => state.auth.token);
     const [isDeleted, setIsDeleted] = useState(false); 
     const [check,setCheck] = useState(false);
-    const [product , setProduct] = useState([]);
+    const [articles , setArticles] = useState([]);
     const navigate = useNavigate();
     const [count , setCount] = useState();
     const [page , setPage] = useState(1);
     const [filter,setFilter] = useState({page : page});
-    const [loading,setLoading] = useState(true)
+    const [loading,setLoading] = useState(true);
+    const headers = {
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Access-Control-Allow-Origin': "*",
+        "Authorization":"Bearer "+ token,
+    }
     useEffect(() =>{
         (async () =>{
             setLoading(true)
             try {
-                const {data , last_page , current_page} = !isDeleted ? await productApi.getProductActiveDetail(filter) : await productApi.getDeletedProduct(filter);
-                console.log(data);
-                setProduct(data);
+                const {data , last_page , current_page} = !isDeleted ? await articleApi.getActive(filter) : await articleApi.getDeleted(filter);
+                setArticles(data);
                 setCount(last_page);
+                console.log(last_page);
                 setPage(current_page);
                 setLoading(false);
             } catch (error) {
@@ -116,34 +118,21 @@ function TableProduct() {
         })()
     },[check ,filter , isDeleted])
     const classes = useStyles();
-    const updateProduct =(id) =>{
-        navigate('/san-pham/cap-nhat/'+id)
+    const updateArticle =(id) =>{
+        navigate('/bai-viet/cap-nhat/'+id)
     }
-    const removeProduct = async (row) =>{
-        if(row.deleted_at){
+    const removeArticle = async (article) =>{
+        if(article.deleted_at){
             alert('Không thể xoá sản phẩm đã xoá');
             return;
         }
-        const config = {
-            headers : {
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Access-Control-Allow-Origin': "*",
-                "Authorization":"Bearer "+ token,
-            }
-        }
-        await productApi.deleteProduct(row.product_id , config);
+        const config = {headers}
+        await articleApi.remove(article.news_id , config);
         setCheck((prev) => !prev)
     }
-    const undoDelete = async (product) =>{
-
-        const config = {
-            headers : {
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Access-Control-Allow-Origin': "*",
-                "Authorization":"Bearer "+ token,
-            }
-        }
-        await productApi.undo(product.product_id,config);
+    const undoDelete = async (article) =>{
+        const config = {headers}
+        await articleApi.undo(article.news_id,config);
         setCheck((prev) => !prev)
     }
     const handlePaginationChange = (e,page) =>{
@@ -171,8 +160,7 @@ function TableProduct() {
         <Box>
             <Box className={classes.root}>
                 <Box style={{margin:'10px 0'}}>
-                    <Button onClick={showDeleted} className={isDeleted ? classes.activeBtn : classes.btn}>Đã xoá</Button> 
-                    <Button className={!isDeleted ? classes.activeBtn : classes.btn} onClick={showActive}>Active</Button>
+                <Button onClick={showDeleted} className={isDeleted ? classes.activeBtn : classes.btn}>Đã Xoá</Button> <Button className={!isDeleted ? classes.activeBtn : classes.btn} onClick={showActive}>Active</Button>
                 </Box>
 
                 {
@@ -184,16 +172,17 @@ function TableProduct() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {product.map((row) =>{
+                        {articles && articles.map((article) =>{
                             return (
-                                <TableRow key={row.product_id} className={classes.row}>
+                                <TableRow key={article.news_id} className={classes.row}>
                                     <TableCell className={classes.cell}>
-                                         <Button disabled={!!row.deleted_at} className={classes.update} onClick={() => updateProduct(row.product_id , row)}>Sửa</Button>
-                                        {!row.deleted_at && <Button className={classes.delete} onClick={() => removeProduct(row)}>Xoá</Button>}
-                                        {row.deleted_at && <Button className={classes.undo} onClick={() => undoDelete(row)}>Undo</Button>}
+                                         <Button disabled={!!article.deleted_at} className={classes.update} onClick={() => updateArticle(article.news_id , article)}>Sửa</Button>
+                                        {!article.deleted_at && <Button className={classes.delete} onClick={() => removeArticle(article)}>Xoá</Button>}
+                                        {article.deleted_at && <Button className={classes.undo} onClick={() => undoDelete(article)}>Undo</Button>}
                                     </TableCell >
-                                    <TableCell className={classes.cell}>{row.product_name}</TableCell>
-                                    <TableCell className={classes.cell}>{VNDFormart(row.price)}</TableCell>
+                                    <TableCell className={classes.cell}>{article.title}</TableCell>
+                                    <TableCell className={classes.cell}>{article.author}</TableCell>
+                                    
                                 </TableRow>
                             )
                         })}
@@ -208,4 +197,4 @@ function TableProduct() {
     );
 }
 
-export default TableProduct;
+export default TableArticle;

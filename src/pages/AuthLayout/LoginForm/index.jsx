@@ -16,6 +16,7 @@ LoginForm.propTypes = {
 function LoginForm({onSubmit}) {
     const schema = yup.object({
         email: yup.string().required('Please enter username'),
+        password : yup.string().required("Please enter password"),
       })
     const form = useForm({
         defaultValues:{

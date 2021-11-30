@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import TableArticle from '../TableArticle/index';
 
 ArticleStatistic.propTypes = {
     
@@ -7,9 +7,9 @@ ArticleStatistic.propTypes = {
 
 function ArticleStatistic(props) {
     return (
-        <div>
-            Thống kê bài viết
-        </div>
+        <>
+            <TableArticle />
+        </>
     );
 }
 

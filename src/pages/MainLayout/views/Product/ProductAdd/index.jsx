@@ -15,6 +15,7 @@ function ProductAdd({type}) {
     const navigate = useNavigate();
 
     const handleAddProductSubmit = (values) =>{
+        console.log(values);
         (async ()=> {
             type === 'create' ? await productApi.create([values] , {
                     headers : {
@@ -42,7 +43,7 @@ function ProductAdd({type}) {
 
     }
     return (
-        <ProductAddForm onSubmit={handleAddProductSubmit}/>
+        <ProductAddForm isEdit={type === 'create' ? false : true} onSubmit={handleAddProductSubmit}/>
     );
 }
 

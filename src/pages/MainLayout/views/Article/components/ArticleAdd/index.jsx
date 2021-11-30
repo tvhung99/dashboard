@@ -28,6 +28,7 @@ function ArticleAdd({type}) {
             })
             .catch((error) => console.log(error)) 
             :
+
             await articleApi.update(params.id ,values , {
                 headers : {
                     'Content-Type': 'application/json;charset=UTF-8',
@@ -44,7 +45,7 @@ function ArticleAdd({type}) {
     }
     
     return (
-        <ArticleAddForm onSubmit={handleSubmit} />
+        <ArticleAddForm isEdit={type === 'create' ? false : true} onSubmit={handleSubmit} />
     );
 }
 

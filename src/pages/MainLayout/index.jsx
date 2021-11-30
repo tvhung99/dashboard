@@ -15,10 +15,10 @@ function MainLayout(props) {
     },[])
     return(
         <>
-            <Grid item xs={3} md={3} sm={3} lg={3}>
+            <Grid item xs={12} md={3} sm={12} lg={3} style={{background:'#def3fd' , minHeight:'100vh'}}>
                 <SideBar />
             </Grid>
-            <Grid item xs={9} md={9} sm={9} lg={9} style={{height:'100vh',borderRadius:'30px'}}>
+            <Grid item xs={12} md={9} sm={12} lg={9} style={{borderRadius:'30px'}}>
                 <Main />
             </Grid>
         </> 
